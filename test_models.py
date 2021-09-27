@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from app import app
-from models import db, User
+from models import db, User, Post
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_test'
@@ -31,3 +31,19 @@ class UserModelTestCase(TestCase):
         self.assertEquals(test_user.get_full_name(), "TestFirst TestLast")
 
    
+class PostModelTestCase(TestCase):
+    """Tests for model for Post."""
+
+    def setUp(self):
+        """Clean up any existing users."""
+
+        Post.query.delete()
+
+    def tearDown(self):
+        """Clean up any fouled transaction."""
+
+        db.session.rollback()
+
+    # def test_post_model(self):
+    #     '''docstring'''
+        # is it possible to test just the straight db model without any methods?

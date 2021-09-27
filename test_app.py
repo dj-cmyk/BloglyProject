@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from app import app
-from models import db, User
+from models import db, User, Post
 
 # Use test database and don't clutter tests with SQL
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_test'
@@ -60,3 +60,49 @@ class UserViewsTestCase(TestCase):
 
             self.assertEqual(resp.status_code, 200)
             self.assertIn("FirstName LastName", html)
+
+
+
+class PostViewsTestCase(TestCase):
+    """Tests for views for Posts."""
+
+    def setUp(self):
+        """Add sample Post."""
+
+        User.query.delete()
+        test_user = User(first_name="TestFirst", last_name="TestLast", image_url='google.com')
+        db.session.add(test_user)
+        db.session.commit()
+
+        Post.query.delete()
+        test_post = Post(title="title", content="text content", user_id = test_user.id)
+        db.session.add(test_post)
+        db.session.commit()
+
+        self.post_id = test_post.id
+
+
+    def tearDown(self):
+        """Clean up any fouled transaction."""
+
+        db.session.rollback()
+
+
+    def test_add_post(self):
+        with app.test_client() as client:
+            d = {"title": "TestTitle", "content": "TestContent", "user_id": 1}
+            resp = client.post("/users/1/posts/new", data=d, follow_redirects=True)
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn("TestTitle", html)
+
+
+    def test_show_post(self):
+        with app.test_client() as client:
+            resp = client.get(f"/posts/{self.post_id}")
+            html = resp.get_data(as_text=True)
+
+            self.assertEqual(resp.status_code, 200)
+            self.assertIn('<h1>title</h1>', html)
+

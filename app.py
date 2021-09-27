@@ -2,7 +2,7 @@
 
 from flask import Flask, render_template, redirect, request
 from flask_debugtoolbar import DebugToolbarExtension
-from models import db, connect_db, User
+from models import db, connect_db, User, Post
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///blogly_db'
@@ -152,4 +152,75 @@ def remove_user_from_db(user_id):
     User.query.filter_by(id=user_id).delete()
     db.session.commit()
     #flash message that user was deleted?
+    return redirect('/users')
+
+
+
+
+# ROUTES FOR BLOG POSTS *********************************
+@app.route('/users/<int:user_id>/posts/new')
+def add_new_post_form(user_id):
+    '''docstring'''
+    user = User.query.get_or_404(user_id)
+    return render_template('post-add.html', user=user)
+
+
+@app.route('/users/<int:user_id>/posts/new', methods=['POST'])
+def handle_new_post(user_id):
+    '''docstring'''
+
+    # get data from form
+    title = request.form['title']
+    content = request.form['content']
+    
+    
+    # create new post with that data
+    new_post = Post(title = title, content = content, user_id = user_id)
+
+    # commit to db
+    db.session.add(new_post)
+    db.session.commit()
+
+    return redirect(f'/users/{user_id}')
+
+
+@app.route('/posts/<int:post_id>')
+def show_post_details(post_id):
+    '''docstring'''
+    post = Post.query.get_or_404(post_id)
+    return render_template('post-detail.html', post=post)
+
+
+@app.route('/posts/<int:post_id>/edit')
+def display_edit_post(post_id):
+    '''docstring'''
+    post = Post.query.get_or_404(post_id)
+    return render_template('post-edit.html', post=post)
+
+
+@app.route('/posts/<int:post_id>/edit', methods=['POST'])
+def handle_edit_post(post_id):
+    '''docstring'''
+    # get post to edit
+    edit_post = Post.query.get_or_404(post_id)
+
+     # get data from form if there is any, and make changes
+    if (request.form['title'] != ''):
+        edit_post.title = request.form['title'] 
+    if (request.form['content'] != ''):
+        edit_post.content = request.form['content']
+    
+    # commit to db
+    db.session.add(edit_post)
+    db.session.commit()
+
+    return redirect(f'/posts/{post_id}')
+
+
+@app.route('/posts/<int:post_id>/delete', methods=['GET', 'POST'])
+def remove_post_from_db(post_id):
+    '''docstring'''
+    Post.query.filter_by(id=post_id).delete()
+    db.session.commit()
+    #flash message that post was deleted?
     return redirect('/users')
