@@ -160,14 +160,28 @@ def remove_user_from_db(user_id):
 # ROUTES FOR BLOG POSTS *********************************
 @app.route('/users/<int:user_id>/posts/new')
 def add_new_post_form(user_id):
-    '''docstring'''
+    """[summary]Add new post for specific user
+
+    Args:
+        user_id ([int]): [user id from db]
+
+    Returns:
+        [render template]: [shows form to add a new blog post for a specific user]
+    """
     user = User.query.get_or_404(user_id)
     return render_template('post-add.html', user=user)
 
 
 @app.route('/users/<int:user_id>/posts/new', methods=['POST'])
 def handle_new_post(user_id):
-    '''docstring'''
+    """[summary]Handle data to add new blog post to DB
+
+    Args:
+        user_id ([int]): [user id from DB for blog post to be attached to]
+
+    Returns:
+        [redirect]: [sends back to user detail page so you can see new blog post added]
+    """
 
     # get data from form
     title = request.form['title']
@@ -186,21 +200,42 @@ def handle_new_post(user_id):
 
 @app.route('/posts/<int:post_id>')
 def show_post_details(post_id):
-    '''docstring'''
+    """[summary]shows detailed blog post
+
+    Args:
+        post_id ([int]): [blog post id from DB]
+
+    Returns:
+        [render template]: [shows details of post - title, content, author, buttons to edit or remove]
+    """
     post = Post.query.get_or_404(post_id)
     return render_template('post-detail.html', post=post)
 
 
 @app.route('/posts/<int:post_id>/edit')
 def display_edit_post(post_id):
-    '''docstring'''
+    """[summary]shows form pre-populated with blog title and content so user can edit fields as desired
+
+    Args:
+        post_id ([int]): [post id primary key from DB]
+
+    Returns:
+        [render template]: [shows form for editing blog posts]
+    """
     post = Post.query.get_or_404(post_id)
     return render_template('post-edit.html', post=post)
 
 
 @app.route('/posts/<int:post_id>/edit', methods=['POST'])
 def handle_edit_post(post_id):
-    '''docstring'''
+    """[summary]handle data to edit blog post title and content
+
+    Args:
+        post_id ([int]): [post id primary key from DB]
+
+    Returns:
+        [redirect]: [back to the detail page of the blog post to see the changes that have been made]
+    """
     # get post to edit
     edit_post = Post.query.get_or_404(post_id)
 
@@ -219,7 +254,14 @@ def handle_edit_post(post_id):
 
 @app.route('/posts/<int:post_id>/delete', methods=['GET', 'POST'])
 def remove_post_from_db(post_id):
-    '''docstring'''
+    """[summary]removes blog post from db
+
+    Args:
+        post_id ([int]): [post id primary key from db]
+
+    Returns:
+        [redirect]: [sends you back to list of all users after blog post has been removed]
+    """
     Post.query.filter_by(id=post_id).delete()
     db.session.commit()
     #flash message that post was deleted?
