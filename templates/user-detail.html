@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %} 
+
+<img src="{{ user.image_url }}" alt="" width='100px' height='100px'>
+<h1>{{ user.get_full_name() }}</h1>
+<a href='/users/{{ user.id }}/edit' class='btn btn-primary'>Edit</a>
+<a href='/users/{{ user.id }}/delete' class='btn btn-danger'>Delete</a>
+<a href="/users" class='btn btn-secondary'>Go back</a>
+
+{% endblock %}
