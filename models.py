@@ -41,3 +41,31 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'))
 
     users_posts = db.relationship('User', backref='posts')
+
+    tags = db.relationship('Tag', secondary='posts_tags', backref='posts_table')
+    
+    
+
+class Tag(db.Model):
+    '''Tags table for db'''
+
+    __tablename__ = 'tags'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    tag = db.Column(db.Text, nullable=False, unique=True)
+
+    posts = db.relationship('PostTag', backref='posts')
+    
+
+
+class PostTag(db.Model):
+    '''join table for posts + tags'''
+
+    __tablename__ = 'posts_tags'
+
+    post_id = db.Column(
+        db.Integer, 
+        db.ForeignKey('posts.id'), 
+        primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey('tags.id'), primary_key=True)
+

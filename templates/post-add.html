@@ -11,6 +11,13 @@
       <label for="content">Content:</label>
       <input type="textarea" class="form-control" id="content" name="content" placeholder="Post Content" required>
     </div>
+    <p>Tags:</p>
+    {% for tag in tags %}
+    <div class="form-group"> 
+        <input type="checkbox" id="{{ tag.tag }}" name="tag-keys" value="{{ tag.tag }}">
+        <label for="{{ tag.tag }}">{{ tag.tag }}</label>
+      </div>
+      {% endfor %}
     <a href="/users/{{ user.id }}" class='btn btn-info'>Cancel</a>
     <button type="submit" class="btn btn-secondary">Submit</button>
   </form>
